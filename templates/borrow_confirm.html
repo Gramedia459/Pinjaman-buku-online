@@ -1,0 +1,34 @@
+{# borrow_confirm.html #}
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Konfirmasi Peminjaman Buku</h2>
+    <p>Anda akan meminjam buku: <strong>{{ book.title }}</strong> oleh {{ book.author }}</p>
+
+    <form method="POST" action="{{ url_for('borrow_book', book_id=book.id) }}">
+        <div class="form-group">
+            <label for="borrower_name">Nama Peminjam:</label>
+            {# default_borrower akan datang dari app.py, ini bisa username user yang login atau kosong #}
+            <input type="text" id="borrower_name" name="borrower_name" value="{{ default_borrower if default_borrower else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="borrower_email">Email Peminjam:</label>
+            {# default_email akan datang dari app.py, ini bisa email user yang login atau kosong #}
+            <input type="email" id="borrower_email" name="borrower_email" value="{{ default_email if default_email else '' }}" placeholder="email@example.com" required>
+            <small>Email ini akan menerima konfirmasi peminjaman.</small>
+        </div>
+        {# BARU: Kolom Petugas yang Mencatat (Wajib dan Kosong Awalnya) #}
+        <div class="form-group">
+            <label for="recorded_by">Petugas yang Mencatat:</label>
+            <input type="text" id="recorded_by" name="recorded_by" value="{{ recorded_by_value if recorded_by_value else '' }}" required>
+        </div>
+        {# Kolom petugas_name_manual DIHAPUS karena digantikan oleh recorded_by yang wajib #}
+        
+        <div class="button-group">
+            <button type="submit" class="button confirm-button">Konfirmasi Peminjaman</button>
+            <a href="{{ url_for('dashboard') }}" class="button cancel-button">Batal</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

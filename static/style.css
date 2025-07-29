@@ -1,0 +1,1535 @@
+/* style.css */
+
+/* Global Box-Sizing: Sangat penting untuk responsivitas */
+html {
+    box-sizing: border-box;
+    height: 100%; /* Pastikan html mengambil seluruh tinggi viewport */
+}
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url('images/Bg1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #000000;
+    font-size: 16px; /* Default font size untuk desktop */
+    /* Menambahkan class no-scroll ke body saat overlay aktif */
+    &.no-scroll {
+        overflow: hidden;
+    }
+
+    /* BARU: Untuk Sticky Footer */
+    display: flex; /* Menggunakan Flexbox */
+    flex-direction: column; /* Mengatur item-item anak dalam kolom */
+    min-height: 100vh; /* Pastikan body setidaknya setinggi viewport */
+}
+
+/* --- LOADING OVERLAY STYLES START --- */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+}
+
+.spinner {
+    border: 5px solid rgba(240, 243, 240, 0.3);
+    border-top: 5px solid #5511b4;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#loading-overlay p {
+    color: #fcfcfc;
+    font-size: 1.7em;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+/* --- LOADING OVERLAY STYLES END --- */
+
+/* Header Styling */
+header {
+    background-color: #344fc8;
+    color: #d4edda;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0; /* Mencegah header menyusut */
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.8em;
+}
+
+/* --- NAV BAR STYLING START --- */
+header nav ul.nav-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap; /* Izinkan item menumpuk di baris baru */
+    justify-content: flex-end; /* Pusatkan item navigasi ke kanan secara default */
+}
+
+header nav ul.nav-links li {
+    margin: 0;
+}
+
+header nav ul.nav-links li span {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    white-space: nowrap;
+}
+
+header nav ul.nav-links li a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+header nav ul.nav-links li a .menu-icon {
+    font-size: 1.5em; /* Default untuk desktop */
+    margin-right: 0;
+}
+
+header nav ul.nav-links li a:hover {
+    background-color: #293fa4;
+}
+/* --- NAV BAR STYLING END --- */
+
+main {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+    background-image: url('images/Gramedia.png');
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: filter 0.3s ease-in-out;
+    flex-grow: 1; /* Memungkinkan main mengambil sisa ruang */
+    /* Tambahan untuk mobile: pastikan padding tidak terlalu besar */
+    box-sizing: border-box; /* Pastikan padding dihitung dalam lebar */
+    width: calc(100% - 20px); /* Beri sedikit padding samping untuk semua layar */
+}
+
+main.blurred {
+    filter: blur(5px);
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Flash Messages (Notifications) */
+.flashes {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.flashes li {
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.flashes .success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.flashes .danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.flashes .info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+/* --- Halaman Login --- */
+.login-page-container {
+    display: flex;
+    min-height: calc(100vh - 100px);
+    max-width: 1200px;
+    margin: 50px auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    background-color: transparent;
+}
+
+.login-left-panel {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url(images/bg_login.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.login-right-panel {
+    flex: 1;
+    background-image: url('images/bg3.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #3d3b42;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px;
+}
+
+.library-logo {
+    max-width: 300px;
+    height: 300px;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.login-right-panel h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+.login-right-panel p {
+    font-size: 1.1em;
+    opacity: 0.8;
+}
+
+/* Auth Container (Login Form Styling) */
+.auth-container {
+    max-width: 400px;
+    margin: 0;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.auth-container h2 {
+    color: #333333;
+    margin-bottom: 20px;
+}
+
+/* Form Groups (Labels and Inputs) */
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+    font-size: 1.1em;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group input[type="email"],
+.form-group select,
+.add-book-form input[type="text"],
+.upload-form-container input[type="file"] {
+    width: calc(100% - 22px);
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 1.1em;
+}
+
+/* --- Gaya Umum untuk Semua Tombol dan Tautan Berkelas "button" --- */
+.button, button[type="submit"] {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1em;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none;
+    box-sizing: border-box;
+}
+
+.button:hover, button[type="submit"]:hover {
+    transform: translateY(-1px);
+}
+
+.button.disabled {
+    background-color: #f50f0f;
+    cursor: not-allowed;
+    color: white;
+    transform: none;
+}
+
+button[type="submit"] {
+    background-color: #6378d9;
+    color: white;
+}
+button[type="submit"]:hover {
+    background-color: #344fc8;
+}
+
+/* --- Gaya Tombol Spesifik (Warna dan Margin) --- */
+.borrow-button {
+    background-color: #6378d9;
+    color: white;
+}
+.borrow-button:hover {
+    background-color: #344fc8;
+}
+
+.return-button {
+    background-color: #6378d9;
+    color: white;
+}
+.return-button:hover {
+    background-color: #344fc8;
+}
+
+.button.cancel-button {
+    background-color: #6c757d;
+    color: white;
+}
+.button.cancel-button:hover {
+    background-color: #5a6268;
+}
+
+.import-button {
+    background-color: #007bff;
+    color: white;
+    margin-top: 10px;
+}
+.import-button:hover {
+    background-color: #0056b3;
+}
+
+/* --- Penyesuaian Tombol Berdasarkan Konteks --- */
+.auth-container button[type="submit"] {
+    padding: 12px 25px;
+    font-size: 1.2em;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.add-book-form button[type="submit"] {
+    width: 100%;
+    padding: 10px 20px;
+    font-size: 1em;
+    margin-top: 10px;
+}
+
+.upload-form-container .button,
+.upload-form-container button[type="submit"] {
+    padding: 10px 20px;
+    font-size: 1em;
+}
+
+/* --- Gaya untuk Grup Tombol Bersebelahan --- */
+.button-group {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+    margin-top: 20px;
+}
+
+.button-group button,
+.button-group .button {
+    width: auto;
+    flex-grow: 1;
+    max-width: 180px;
+}
+
+.button.confirm-button {
+    background-color: #007bff;
+    color: white;
+}
+.button.confirm-button:hover {
+    background-color: #0056b3;
+}
+
+/* --- Dashboard Styling --- */
+.dashboard-container {
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.dashboard-container h2 {
+    margin-bottom: 25px;
+    color: #333;
+    text-align: center;
+}
+
+.section {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* Kontainer untuk form Tambah Buku dan Gambar di sampingnya (Desktop) */
+.add-book-section-container {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 25px;
+    justify-content: center;
+}
+.add-book-form-area {
+    flex: 1;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    box-sizing: border-box;
+    min-width: 300px;
+}
+.add-book-form-area h3 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+.add-book-form input[type="text"],
+.add-book-form select {
+    width: 100%;
+    box-sizing: border-box;
+}
+.add-book-form button[type="submit"] {
+    width: 100%;
+    padding: 10px 20px;
+    font-size: 1em;
+    margin-top: 10px;
+}
+
+/* Gambar di samping form (desktop only) */
+.admin-dashboard-image-wrapper.image-desktop-side {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    flex-basis: 300px;
+    flex-shrink: 0;
+    max-width: 40%;
+    align-self: stretch;
+}
+.admin-dashboard-image-wrapper.image-desktop-side .admin-dashboard-image {
+    max-width: 100%;
+    height: auto;
+    max-height: 250px;
+    object-fit: contain;
+}
+
+/* Kontainer Logo HANYA untuk tampilan MOBILE */
+.logo-mobile-top-of-form {
+    display: none;
+    text-align: center;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+}
+.logo-mobile-top-of-form .admin-dashboard-image-wrapper {
+    display: block;
+    width: auto;
+    padding: 0;
+    margin: 0 auto;
+}
+.logo-mobile-top-of-form .admin-dashboard-image {
+    max-width: 180px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Gaya untuk Manajemen Pengguna (manage_users.html) */
+.section-box {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.section-box h3 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.delete-button {
+    background-color: #ff2b18;
+    color: white;
+    font-size: 0.9em;
+    padding: 6px 10px;
+}
+
+.delete-button:hover {
+    background-color: #d11b0a;
+}
+
+.text-muted {
+    color: #6c757d;
+    font-size: 0.9em;
+}
+
+.section h3 {
+    margin-top: 0;
+    color: #555;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+/* Gaya untuk Kontainer Logo di Dashboard Peminjam */
+.dashboard-logo-container {
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 25px;
+    padding: 10px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.dashboard-logo {
+    max-width: 200px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border-radius: 8px;
+}
+
+/* ADMIN/PEMINJAM DASHBOARD TABLE STYLING */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    table-layout: fixed;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.data-table th, .data-table td {
+    border: 1px solid #ddd;
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: clip;
+    white-space: nowrap;
+    font-size: 0.85em;
+}
+
+
+.data-table th {
+    background-color: #1100ff;
+    font-weight: bold;
+    color: white;
+    vertical-align: middle;
+}
+
+.filter-row td {
+    padding: 5px 8px;
+}
+.filter-row input, .filter-row select {
+    width: calc(100% - 16px);
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 0.9em;
+}
+
+.data-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.data-table tbody tr:hover {
+    background-color: #e0e0e0;
+}
+
+/* Lebar kolom spesifik untuk booksTable (penyesuaian untuk responsivitas) */
+#booksTable th:nth-child(1), #booksTable td:nth-child(1) { width: 70px; min-width: 60px; }
+#booksTable th:nth-child(2), #booksTable td:nth-child(2) { width: 30%; min-width: 150px; }
+#booksTable th:nth-child(3), #booksTable td:nth-child(3) { width: 20%; min-width: 100px; }
+#booksTable th:nth-child(4), #booksTable td:nth-child(4) { width: 80px; min-width: 70px; }
+#booksTable th:nth-child(5), #booksTable td:nth-child(5) { width: 20%; min-width: 120px; }
+#booksTable th:nth-child(6), #booksTable td:nth-child(6) { width: 80px; min-width: 70px; text-align: center; padding: 5px 8px; }
+
+/* Perbesar tombol dan label di dalam tabel dashboard */
+.data-table td .button,
+.data-table td .disabled {
+    padding: 10px 16px;
+    font-size: 1em;
+    min-width: 90px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2px;
+    box-sizing: border-box;
+}
+
+/* Sesuaikan ukuran font ikon di dalam tombol jika ada */
+.data-table td .button .fas,
+.data-table td .disabled .fas {
+    font-size: 1.1em;
+    margin-right: 5px;
+}
+
+
+/* Lebar kolom spesifik untuk loansTable (penyesuaian untuk responsivitas) */
+#loansTable th:nth-child(1), #loansTable td:nth-child(1) { width: 70px; min-width: 60px; }
+#loansTable th:nth-child(2), #loansTable td:nth-child(2) { width: 20%; min-width: 140px; }
+#loansTable th:nth-child(3), #loansTable td:nth-child(3) { width: 12%; min-width: 90px; }
+#loansTable th:nth-child(4), #loansTable td:nth-child(4) { width: 12%; min-width: 90px; }
+#loansTable th:nth-child(5), #loansTable td:nth-child(5) { width: 18%; min-width: 140px; }
+#loansTable th:nth-child(6), #loansTable td:nth-child(6) { width: 100px; min-width: 90px; }
+#loansTable th:nth-child(7), #loansTable td:nth-child(7) { width: 100px; min-width: 90px; }
+#loansTable th:nth-child(8), #loansTable td:nth-child(8) { width: 100px; min-width: 90px; }
+#loansTable th:nth-child(9), #loansTable td:nth-child(9) { width: 12%; min-width: 100px; }
+#loansTable th:nth-child(10), #loansTable td:nth-child(10) { width: 100px; min-width: 90px; }
+#loansTable th:nth-child(11), #loansTable td:nth-child(11) { width: 100px; min-width: 90px; text-align: center; padding: 5px 8px; }
+/* Perbesar tombol di loansTable juga */
+#loansTable td .button { padding: 10px 16px; font-size: 1em; white-space: nowrap; margin: 2px; display: inline-block;}
+
+
+.overdue-text {
+    color: #dc3545;
+    font-weight: bold;
+}
+/* ADMIN/PEMINJAM DASHBOARD TABLE STYLING END */
+
+/* Gaya Filter Riwayat Peminjaman */
+.filter-section {
+    margin-bottom: 30px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.loan-history-filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+}
+.filter-grid .form-group {
+    margin-bottom: 0;
+}
+.loan-history-filter-form .form-group label {
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+.loan-history-filter-form input[type="text"],
+.loan-history-filter-form input[type="email"],
+.loan-history-filter-form input[type="date"],
+.loan-history-filter-form select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 0.9em;
+}
+.filter-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+.filter-buttons .button {
+    padding: 10px 20px;
+    font-size: 1em;
+    width: 100%;
+}
+
+/* Gaya tambahan untuk container */
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    width: calc(100% - 20px);
+}
+
+/* Gaya untuk form pendaftaran (register.html) */
+.form-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    box-sizing: border-box;
+    width: calc(100% - 20px);
+}
+.form-container h2 {
+    color: #333;
+    margin-bottom: 25px;
+}
+
+/* --- FOOTER STYLING --- */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #000000;
+    color: #ffffff;
+    border-top: 1px solid #ddd;
+    width: 100%;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+/* --- Pop-up Notifikasi (dari BASE.HTML dan digunakan di LOGIN.HTML) --- */
+#loan-success-popup-overlay,
+#return-success-popup-overlay,
+#delete-confirm-popup-overlay,
+#forgot-password-modal { /* TERMASUK #forgot-password-modal DI SINI */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;          /* Awalnya tidak terlihat */
+    visibility: hidden;  /* Awalnya tidak interaktif */
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+#loan-success-popup-overlay.show,
+#return-success-popup-overlay.show,
+#delete-confirm-popup-overlay.show,
+#forgot-password-modal.show { /* Kelas 'show' untuk menampilkan */
+    opacity: 1;
+    visibility: visible;
+}
+
+
+.loan-success-popup-content,
+.return-success-popup-content,
+.delete-popup-content,
+.popup-content { /* Class .popup-content umum untuk modal */
+    background: #fff;
+    padding: 20px; /* Mengurangi padding untuk membuatnya lebih kecil */
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    max-width: 350px; /* Mengurangi max-width untuk membuatnya lebih kecil */
+    width: 90%; /* Tetap 90% untuk responsivitas */
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.loan-success-popup-content {
+    max-width: 300px;
+    padding: 20px;
+}
+
+.return-success-popup-content {
+    max-width: 380px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.delete-popup-content {
+    max-width: 450px;
+    padding: 30px;
+}
+
+#loan-success-popup-overlay.show .loan-success-popup-content,
+#return-success-popup-overlay.show .return-success-popup-content,
+#delete-confirm-popup-overlay.show .delete-popup-content,
+#forgot-password-modal.show .popup-content {
+    transform: scale(1);
+}
+
+.loan-success-popup-content img,
+.return-success-popup-content img {
+    max-width: 180px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.delete-popup-content .popup-icon {
+    max-width: 80px;
+    height: auto;
+    margin-bottom: 15px;
+}
+
+.loan-success-popup-content h3 {
+    color: #333;
+    font-size: 1.0em;
+    margin-bottom: 5px;
+}
+
+.return-success-popup-content h3 {
+    color: #333;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+
+.return-success-popup-content h4 {
+    color: #333;
+    font-size: 0.8em;
+    margin-bottom: 5px;
+}
+
+.delete-popup-content h3 {
+    color: #333;
+    font-size: 1.2em;
+    margin-bottom: 15px;
+}
+
+.loan-success-popup-content p {
+    color: #555;
+    font-size: 0.8em;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.return-success-popup-content .question {
+    color: #555;
+    font-size: 0.8em;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.delete-popup-content p {
+    color: #555;
+    font-size: 1em;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.loan-success-popup-content button,
+.return-success-popup-content button,
+.delete-popup-content button {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.loan-success-popup-content button:hover,
+.return-success-popup-content button:hover,
+.delete-popup-content button:hover {
+    background-color: #0056b3;
+}
+
+.feedback-buttons {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: auto;
+    width: 100%;
+    padding: 0 10px;
+    box-sizing: border-box;
+    min-height: 50px;
+}
+
+#btnTidakMenyukai {
+    background-color: #ea2e21;
+    color: white;
+    transition: all 0.1s ease-out;
+}
+
+
+
+.delete-popup-content .button-group {
+    justify-content: center;
+    margin-top: 0;
+}
+
+.delete-popup-content .button.danger {
+    background-color: #dc3545;
+}
+.delete-popup-content .button.danger:hover {
+    background-color: #c82333;
+}
+
+.delete-popup-content .button.cancel-button {
+    background-color: #6c757d;
+}
+.delete-popup-content .button.cancel-button:hover {
+    background-color: #5a6268;
+}
+
+/* --- PROFILE OVERLAY STYLING --- */
+#profile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1050;
+    display: flex;
+    justify-content: flex-end;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+#profile-overlay.active {
+    visibility: visible;
+    opacity: 1;
+}
+
+.profile-panel {
+    background-color: #fff;
+    padding: 30px;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+    width: 30%;
+    max-width: 400px;
+    height: 100%;
+    overflow-y: auto;
+    position: relative;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    box-sizing: border-box;
+}
+
+#profile-overlay.active .profile-panel {
+    transform: translateX(0);
+}
+
+.profile-panel h2 {
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #1100ff;
+    padding-bottom: 10px;
+    display: inline-block;
+}
+
+.profile-panel .profile-avatar-placeholder {
+    width: 100px;
+    height: 100px;
+    background-color: #e0e0e0;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 20px auto;
+    font-size: 2.5em;
+    color: #888;
+    border: 3px solid #1100ff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.profile-panel .profile-avatar-placeholder i {
+    color: #1100ff;
+}
+
+.profile-panel .profile-details {
+    text-align: left;
+    margin-top: 20px;
+}
+
+.profile-panel .profile-details p {
+    font-size: 0.8em;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.profile-panel .profile-details p strong {
+    color: #1100ff;
+    display: inline-block;
+    min-width: 110px;
+}
+
+.profile-panel .profile-details .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px dashed #eee;
+}
+
+.profile-panel .profile-details .detail-row:last-child {
+    border-bottom: none;
+}
+
+.profile-panel .profile-logout-button {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 15px;
+    font-size: 0.9em;
+    margin-top: 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    width: calc(100% - 60px);
+    box-sizing: border-box;
+}
+
+.profile-panel .profile-logout-button:hover {
+    background-color: #0056b3;
+}
+
+.profile-panel .close-overlay-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.profile-panel .close-overlay-button:hover {
+    color: #333;
+}
+
+/* Media Queries Responsif */
+
+/* Untuk layar tablet dan desktop kecil (<992px) */
+@media (max-width: 992px) {
+    header {
+        padding: 1rem;
+    }
+    header h1 {
+        font-size: 1.6em;
+    }
+    header nav ul.nav-links {
+        gap: 15px;
+    }
+
+    main {
+        padding: 15px;
+        margin: 15px auto;
+    }
+
+    /* Sembunyikan logo mobile di desktop/tablet */
+    .logo-mobile-top-of-form {
+        display: none;
+    }
+    /* Tampilkan logo desktop di desktop/tablet (sudah default flex) */
+    .admin-dashboard-image-wrapper.image-desktop-side {
+        display: flex;
+    }
+
+
+    .login-page-container {
+        margin: 30px auto;
+    }
+    .login-left-panel, .login-right-panel {
+        padding: 30px;
+    }
+    .library-logo {
+        max-width: 250px;
+        height: 250px;
+    }
+    .login-right-panel h1 {
+        font-size: 2em;
+    }
+    .login-right-panel p {
+        font-size: 1em;
+    }
+
+    .dashboard-container, .section, .section-box {
+        padding: 18px;
+        margin-bottom: 20px;
+    }
+
+    .data-table th, .data-table td {
+        padding: 6px;
+        font-size: 0.8em;
+    }
+    .filter-row td {
+        padding: 4px;
+    }
+    .filter-row input, .filter-row select {
+        padding: 4px;
+        font-size: 0.8em;
+    }
+    /* Ukuran tombol di dalam tabel untuk tablet */
+    .data-table td .button,
+    .data-table td .disabled {
+        padding: 8px 12px;
+        font-size: 0.85em;
+        min-width: 75px;
+    }
+
+
+    /* Lebar kolom spesifik untuk loansTable (tablet) */
+    #loansTable td .button { padding: 8px 12px; font-size: 0.85em; }
+
+    /* Logo Dashboard Peminjam di Tablet */
+    .dashboard-logo-container {
+        margin-bottom: 15px;
+        padding: 5px;
+    }
+    .dashboard-logo {
+        max-width: 250px;
+    }
+
+    .profile-panel {
+        width: 40%;
+        max-width: 400px;
+    }
+
+    /* Penyesuaian font-size footer untuk tablet */
+    footer p {
+        font-size: 0.9em;
+    }
+}
+
+/* Untuk layar ponsel dan tablet potrait (<768px) */
+@media (max-width: 768px) {
+    /* Tampilkan logo mobile di mobile */
+    .logo-mobile-top-of-form {
+        display: block;
+    }
+    /* Sembunyikan logo desktop di mobile */
+    .admin-dashboard-image-wrapper.image-desktop-side {
+        display: none;
+    }
+
+    header {
+        flex-direction: column;
+        align-items: center;
+        padding: 1.2rem 0.8rem;
+    }
+    /* PERBESAR: Tulisan "Sistem Peminjaman Buku" */
+    header h1 {
+        font-size: 1.9em;
+        margin-bottom: 10px;
+    }
+    header nav ul.nav-links {
+        justify-content: center;
+        gap: 8px;
+    }
+    header nav ul.nav-links li a {
+        padding: 0.6rem 0.9rem;
+        font-size: 1em;
+    }
+    /* DIKECILKAN: Icon pada Navbar */
+    header nav ul.nav-links li a .menu-icon {
+        font-size: 1.4em;
+    }
+
+    main {
+        padding: 15px;
+        margin: 10px auto;
+    }
+
+    .login-page-container {
+        flex-direction: column;
+        margin: 15px auto;
+        min-height: auto;
+        box-shadow: none;
+    }
+    .login-left-panel, .login-right-panel {
+        width: 100%;
+        padding: 30px;
+        min-height: 220px;
+    }
+    /* PERBESAR: Tampilan Logo di Halaman Login */
+    .library-logo {
+        max-width: 200px;
+        height: 200px;
+    }
+    /* PERBESAR: Tulisan di Panel Kanan Halaman Login */
+    .login-right-panel h1 {
+        font-size: 2.5em;
+    }
+    .login-right-panel p {
+        font-size: 1.1em;
+        opacity: 1;
+    }
+
+
+    /* Penyesuaian Dashboard & Section Boxes */
+    .dashboard-container, .section, .section-box {
+        padding: 18px;
+        margin-bottom: 15px;
+    }
+    .section-box h3 {
+        font-size: 1.4em;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+    }
+
+    /* Kontainer form tambah buku (mobile: akan menjadi satu kolom) */
+    .add-book-section-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+    }
+    .add-book-form-area {
+        width: 100%;
+        min-width: unset;
+        padding: 18px;
+    }
+    .add-book-form input[type="text"],
+    .add-book-form select {
+        font-size: 1em;
+        padding: 12px;
+    }
+    .add-book-form button[type="submit"] {
+        padding: 12px 25px;
+        font-size: 1.1em;
+    }
+
+    /* Tabel Styling untuk Mobile */
+    .data-table th, .data-table td {
+        font-size: 0.9em;
+        padding: 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: clip;
+        vertical-align: middle;
+    }
+    /* Pastikan lebar kolom tabel menyesuaikan di mobile */
+    #booksTable th, #booksTable td,
+    #loansTable th, #loansTable td {
+        min-width: unset !important;
+        width: auto !important;
+    }
+    /* Lebar kolom disesuaikan agar lebih proporsional */
+    #booksTable th:nth-child(1), #booksTable td:nth-child(1) { width: 75px; }
+    #booksTable th:nth-child(2), #booksTable td:nth-child(2) { width: 180px; }
+    #booksTable th:nth-child(3), #booksTable td:nth-child(3) { width: 120px; }
+    #booksTable th:nth-child(4), #booksTable td:nth-child(4) { width: 100px; }
+    #booksTable th:nth-child(5), #booksTable td:nth-child(5) { width: 140px; }
+    #booksTable th:nth-child(6), #booksTable td:nth-child(6) { width: 110px; }
+
+    #loansTable th:nth-child(1), #loansTable td:nth-child(1) { width: 75px; }
+    #loansTable th:nth-child(2), #loansTable td:nth-child(2) { width: 160px; }
+    #loansTable th:nth-child(3), #loansTable td:nth-child(3) { width: 100px; }
+    #loansTable th:nth-child(4), #loansTable td:nth-child(4) { width: 100px; }
+    #loansTable th:nth-child(5), #loansTable td:nth-child(5) { width: 160px; }
+    #loansTable th:nth-child(6), #loansTable td:nth-child(6) { width: 120px; }
+    #loansTable th:nth-child(7), #loansTable td:nth-child(7) { width: 120px; }
+    #loansTable th:nth-child(8), #loansTable td:nth-child(8) { width: 120px; }
+    #loansTable th:nth-child(9), #loansTable td:nth-child(9) { width: 120px; }
+    #loansTable th:nth-child(10), #loansTable td:nth-child(10) { width: 100px; }
+    #loansTable th:nth-child(11), #loansTable td:nth-child(11) { width: 100px; }
+
+
+    .filter-row input, .filter-row select {
+        font-size: 0.95em;
+        padding: 8px;
+    }
+    /* Perbesar Tombol "Pinjam", "Kembalikan", dan label "Dipinjam" di tabel layar sangat kecil */
+    .data-table td .button,
+    .data-table td .disabled {
+        padding: 12px 18px;
+        font-size: 1.1em;
+        min-width: 90px;
+    }
+    #loansTable td .button { padding: 12px 18px; font-size: 1.1em; }
+
+    /* Filter Section Mobile */
+    .filter-section {
+        padding: 18px;
+    }
+    .filter-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+    .filter-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    .filter-buttons .button {
+        width: 95%;
+        max-width: 320px;
+        padding: 16px 30px;
+        font-size: 1.3em;
+    }
+
+    .button-group {
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+    }
+    .button-group button, .button-group .button {
+        width: 95%;
+        max-width: 400px;
+        padding: 16px 30px;
+        font-size: 1.3em;
+    }
+
+    /* Logo Dashboard Peminjam di Mobile/Tablet Potrait */
+    .dashboard-logo {
+        max-width: 220px;
+    }
+
+    .profile-panel {
+        width: 100%;
+        max-width: none;
+        padding: 35px;
+    }
+    .profile-panel h2 {
+        font-size: 2.2em;
+    }
+    .profile-panel .profile-avatar-placeholder {
+        width: 100px;
+        height: 100px;
+        font-size: 2.5em;
+    }
+    .profile-panel .profile-details p {
+        font-size: 1.1em;
+    }
+
+    /* PERBESAR: Tulisan Footer */
+    footer p {
+        font-size: 1.1em;
+        line-height: 1.7;
+        padding: 28px;
+    }
+}
+
+/* Untuk ponsel sangat kecil (<480px) - Opsional, untuk penyesuaian ekstrem */
+@media (max-width: 480px) {
+    body {
+        font-size: 13px;
+    }
+    header {
+        padding: 1.1rem 0.8rem;
+    }
+    /* PERBESAR: Tulisan "Sistem Peminjaman Buku" di layar sangat kecil */
+    header h1 {
+        font-size: 1.7em;
+    }
+    header nav ul.nav-links {
+        justify-content: center;
+        gap: 7px;
+    }
+    header nav ul.nav-links li a {
+        font-size: 0.95em;
+        padding: 0.45rem 0.7rem;
+    }
+    /* DIKECILKAN: Icon pada Navbar di layar sangat kecil */
+    header nav ul.nav-links li a .menu-icon {
+        font-size: 1.3em;
+    }
+
+    main {
+        padding: 12px;
+    }
+    /* PERBESAR: Tampilan Logo dan Tulisan di Panel Kanan Halaman Login */
+    .login-right-panel h1 {
+        font-size: 2.3em;
+    }
+    .login-left-panel, .login-right-panel {
+        padding: 22px;
+        min-height: 190px;
+    }
+    .library-logo {
+        max-width: 190px;
+        height: 190px;
+    }
+    .login-right-panel p {
+        font-size: 1.05em;
+    }
+
+    .auth-container {
+        padding: 28px;
+    }
+    .auth-container button[type="submit"] {
+        font-size: 1.25em;
+        padding: 15px 29px;
+    }
+    .dashboard-container, .section, .section-box {
+        padding: 16px;
+    }
+    .section-box h3 {
+        font-size: 1.25em;
+        margin-bottom: 16px;
+    }
+    .data-table th, .data-table td {
+        font-size: 0.85em;
+        padding: 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: clip;
+        vertical-align: middle;
+    }
+    /* PERBESAR: Tombol "Pinjam", "Kembalikan", dan label "Dipinjam" di tabel layar sangat kecil */
+    .data-table td .button,
+    .data-table td .disabled {
+        padding: 12px 18px;
+        font-size: 1.1em;
+        min-width: 90px;
+    }
+    #loansTable td .button { padding: 12px 18px; font-size: 1.1em; }
+
+    /* Lebar kolom untuk layar sangat kecil */
+    #booksTable th:nth-child(1), #booksTable td:nth-child(1) { width: 70px; }
+    #booksTable th:nth-child(2), #booksTable td:nth-child(2) { width: 140px; }
+    #booksTable th:nth-child(3), #booksTable td:nth-child(3) { width: 100px; }
+    #booksTable th:nth-child(4), #booksTable td:nth-child(4) { width: 90px; }
+    #booksTable th:nth-child(5), #booksTable td:nth-child(5) { width: 120px; }
+    #booksTable th:nth-child(6), #booksTable td:nth-child(6) { width: 95px; }
+
+    #loansTable th:nth-child(1), #loansTable td:nth-child(1) { width: 70px; }
+    #loansTable th:nth-child(2), #loansTable td:nth-child(2) { width: 130px; }
+    #loansTable th:nth-child(3), #loansTable td:nth-child(3) { width: 95px; }
+    #loansTable th:nth-child(4), #loansTable td:nth-child(4) { width: 95px; }
+    #loansTable th:nth-child(5), #loansTable td:nth-child(5) { width: 130px; }
+    #loansTable th:nth-child(6), #loansTable td:nth-child(6) { width: 105px; }
+    #loansTable th:nth-child(7), #loansTable td:nth-child(7) { width: 105px; }
+    #loansTable th:nth-child(8), #loansTable td:nth-child(8) { width: 105px; }
+    #loansTable th:nth-child(9), #loansTable td:nth-child(9) { width: 105px; }
+    #loansTable th:nth-child(10), #loansTable td:nth-child(10) { width: 95px; }
+    #loansTable th:nth-child(11), #loansTable td:nth-child(11) { width: 95px; }
+
+    .filter-row input, .filter-row select {
+        font-size: 1em;
+        padding: 7px;
+    }
+    .filter-buttons .button {
+        font-size: 1.2em;
+        padding: 14px 28px;
+    }
+    .profile-panel {
+        padding: 30px;
+    }
+    /* PERBESAR: Tulisan Footer di layar sangat kecil */
+    footer p {
+        font-size: 1.1em;
+        line-height: 1.6;
+        padding: 28px;
+    }
+}
+
+/* --- Tombol WhatsApp Floating START --- */
+.whatsapp-float {
+    position: fixed; /* Membuat tombol tetap di posisi layar */
+    width: 60px; /* Lebar tombol */
+    height: 60px; /* Tinggi tombol */
+    bottom: 40px; /* Jarak dari bawah */
+    right: 40px; /* Jarak dari kanan */
+    background-color: #25d366; /* Warna hijau WhatsApp */
+    color: #FFF; /* Warna ikon */
+    border-radius: 50px; /* Membuat bentuk lingkaran */
+    text-align: center;
+    font-size: 30px; /* Ukuran ikon */
+    box-shadow: 2px 2px 3px #999; /* Efek bayangan */
+    z-index: 1000; /* Pastikan tombol di atas elemen lain */
+    display: flex; /* Untuk memposisikan ikon di tengah */
+    justify-content: center; /* Posisi horizontal ikon */
+    align-items: center; /* Posisi vertikal ikon */
+    text-decoration: none; /* Hilangkan garis bawah link */
+    transition: background-color 0.3s ease; /* Efek transisi saat hover */
+}
+
+.whatsapp-float:hover {
+    background-color: #1DA851; /* Warna hijau lebih gelap saat hover */
+}
+
+.whatsapp-icon {
+    margin-top: 0; /* Sesuaikan jika Font Awesome icon perlu penyesuaian vertikal */
+}
+
+/* Responsif untuk layar lebih kecil */
+@media (max-width: 768px) {
+    .whatsapp-float {
+        width: 50px;
+        height: 50px;
+        bottom: 20px;
+        right: 20px;
+        font-size: 25px;
+    }
+}
+/* --- Tombol WhatsApp Floating END --- */

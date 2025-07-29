@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Manajemen Pengguna - Sistem Peminjaman Buku{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Manajemen Pengguna</h2>
+
+    {# Form untuk Menambah Pengguna Baru #}
+    <div class="section-box">
+        <h3>Tambah Pengguna Baru</h3>
+        <form method="POST" action="{{ url_for('manage_users') }}">
+            <input type="hidden" name="action" value="add_user">
+            <div class="form-group">
+                <label for="new_full_name">Nama Lengkap:</label>
+                <input type="text" id="new_full_name" name="full_name" required placeholder="Nama Lengkap Pengguna" value="{{ full_name if full_name }}">
+            </div>
+            <div class="form-group">
+                <label for="new_username">Username:</label>
+                <input type="text" id="new_username" name="username" required placeholder="Contoh: 084004" value="{{ username if username }}">
+            </div>
+            <div class="form-group">
+                <label for="new_password">Password:</label>
+                <input type="password" id="new_password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="new_email">Email:</label>
+                <input type="email" id="new_email" name="email" placeholder="contoh@domain.com" required value="{{ email if email }}">
+            </div>
+            <div class="form-group">
+                <label for="new_role">Peran:</label>
+                <select id="new_role" name="role">
+                    <option value="peminjam">Peminjam</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <button type="submit" class="button">Tambah Pengguna</button>
+        </form>
+    </div>
+
+    {# Daftar Pengguna yang Ada #}
+    <div class="section-box">
+        <h3>Daftar Pengguna</h3>
+        {% if users %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Nama Lengkap</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Peran</th>
+                    <th>Tanggal Daftar</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.full_name if user.full_name else '-' }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email if user.email else '-' }}</td>
+                    <td>{{ user.role.capitalize() }}</td>
+                    <td>{{ user.registration_date.strftime('%d-%m-%Y %H:%M') if user.registration_date else '-' }}</td>
+                    <td>
+                        {% if user.id != current_user.id %}
+                        {# Mengganti form onsubmit dengan tombol yang akan memicu pop-up kustom #}
+                        <button type="button" class="button delete-button" data-user-id="{{ user.id }}" data-username="{{ user.username }}">Hapus</button>
+                        {% else %}
+                        <span class="text-muted">Akun Anda</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Tidak ada pengguna terdaftar.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div id="delete-confirm-popup-overlay" class="popup-overlay">
+    <div class="popup-content delete-popup-content">
+        <img src="{{ url_for('static', filename='images/warning.png') }}" alt="Peringatan" class="popup-icon"> {# Gambar peringatan, pastikan Anda memiliki ikon ini di folder static/images/ #}
+        <h3>Konfirmasi Penghapusan Pengguna</h3>
+        <p>Apakah Anda yakin ingin menghapus pengguna <strong id="user-to-delete-name"></strong>?</p>
+        <p>Tindakan ini dapat menghapus semua riwayat peminjamannya.</p>
+        <div class="button-group">
+            <button id="btnDeleteConfirm" class="button danger">Hapus</button>
+            <button id="btnDeleteCancel" class="button cancel-button">Batal</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-button');
+        const deleteConfirmOverlay = document.getElementById('delete-confirm-popup-overlay');
+        const userToDeleteName = document.getElementById('user-to-delete-name');
+        const btnDeleteConfirm = document.getElementById('btnDeleteConfirm');
+        const btnDeleteCancel = document.getElementById('btnDeleteCancel');
+        let userIdToDelete = null;
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Mencegah form default submit (jika ada)
+
+                userIdToDelete = this.dataset.userId; // Ambil ID pengguna dari data-attribute
+                const usernameToDelete = this.dataset.username; // Ambil username dari data-attribute
+
+                userToDeleteName.textContent = usernameToDelete; // Set nama pengguna di pop-up
+                deleteConfirmOverlay.classList.add('show');
+                document.body.classList.add('no-scroll'); // Menambah kelas no-scroll ke body
+            });
+        });
+
+        btnDeleteConfirm.addEventListener('click', function() {
+            // Setelah konfirmasi, submit form penghapusan secara manual
+            const deleteForm = document.createElement('form');
+            deleteForm.method = 'POST';
+            deleteForm.action = '{{ url_for("manage_users") }}';
+
+            const userIdInput = document.createElement('input');
+            userIdInput.type = 'hidden';
+            userIdInput.name = 'user_id';
+            userIdInput.value = userIdToDelete;
+            deleteForm.appendChild(userIdInput);
+
+            const actionInput = document.createElement('input');
+            actionInput.type = 'hidden';
+            actionInput.name = 'action';
+            actionInput.value = 'delete_user';
+            deleteForm.appendChild(actionInput);
+
+            document.body.appendChild(deleteForm); // Penting: tambahkan form ke body
+            deleteForm.submit(); // Submit form
+
+            deleteConfirmOverlay.classList.remove('show');
+            document.body.classList.remove('no-scroll'); // Menghapus kelas no-scroll
+        });
+
+        btnDeleteCancel.addEventListener('click', function() {
+            deleteConfirmOverlay.classList.remove('show');
+            document.body.classList.remove('no-scroll'); // Menghapus kelas no-scroll
+            userIdToDelete = null; // Reset ID
+        });
+    });
+</script>
+
+{% endblock %}

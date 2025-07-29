@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="login-page-container">
+    <div class="login-left-panel">
+        <div class="auth-container">
+            <h2>Login</h2>
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+
+            {# BARU: Bagian Reset Password #}
+            {# Tombol ini akan muncul jika failed_attempts mencapai atau melebihi max_attempts (defaultnya 2) #}
+            {% if failed_attempts is defined and failed_attempts >= max_attempts %}
+                <p class="error-message" style="margin-top: 15px;">
+                    Anda telah salah memasukkan password {{ failed_attempts }} kali.
+                </p>
+                <button type="button" id="forgot-password-button" class="button button-secondary" style="margin-top: 10px;">Lupa Password?</button>
+            {% endif %}
+            {# Akhir Bagian Reset Password #}
+        </div>
+    </div>
+    <div class="login-right-panel">
+        <img src="{{ url_for('static', filename='images/LOGO_G.png') }}" alt="Logo Perpustakaan" class="library-logo">
+        <h1>Gramedia Ternate</h1>
+        <p>Sistem Pinjam Buku Digital 2025 (10459)</p>
+    </div>
+</div>
+
+{# BARU: Modal untuk Lupa Password. Awalnya tersembunyi oleh CSS 'display: none;' atau 'opacity: 0; visibility: hidden;' #}
+<div id="forgot-password-modal" class="popup-overlay">
+    <div class="popup-content">
+        <h3>Reset Password</h3>
+        <p>Masukkan email yang terdaftar pada akun Anda untuk mereset password.</p>
+        <form method="POST" action="{{ url_for('forgot_password') }}">
+            <div class="form-group">
+                <label for="reset_email">Email:</label>
+                <input type="email" id="reset_email" name="email" required placeholder="email@contoh.com">
+            </div>
+            <div class="button-group" style="justify-content: center;">
+                <button type="submit" class="button">Kirim Link Reset</button>
+                <button type="button" id="close-forgot-password-modal" class="button cancel-button">Batal</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{# SCRIPT JAVASCRIPT UNTUK MODAL - PASTIKAN INI ADA #}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const forgotPasswordButton = document.getElementById('forgot-password-button');
+        const forgotPasswordModal = document.getElementById('forgot-password-modal');
+        const closeForgotPasswordModal = document.getElementById('close-forgot-password-modal');
+
+        // Event listener untuk tombol "Lupa Password?"
+        if (forgotPasswordButton) {
+            forgotPasswordButton.addEventListener('click', function() {
+                console.log("Tombol Lupa Password diklik!"); // Debugging: log ke konsol browser
+                forgotPasswordModal.classList.add('show'); // Tambah kelas 'show' untuk menampilkan modal
+                document.body.classList.add('no-scroll'); // Tambah kelas untuk mencegah scrolling body
+            });
+        }
+
+        // Event listener untuk tombol "Batal" di dalam modal
+        if (closeForgotPasswordModal) {
+            closeForgotPasswordModal.addEventListener('click', function() {
+                forgotPasswordModal.classList.remove('show'); // Hapus kelas 'show' untuk menyembunyikan modal
+                document.body.classList.remove('no-scroll'); // Hapus kelas untuk mengizinkan scrolling body
+            });
+        }
+
+        // Event listener untuk menutup modal jika mengklik di luar area konten modal
+        if (forgotPasswordModal) {
+            forgotPasswordModal.addEventListener('click', function(event) {
+                if (event.target === forgotPasswordModal) { // Hanya jika klik langsung pada overlay
+                    forgotPasswordModal.classList.remove('show');
+                    document.body.classList.remove('no-scroll');
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

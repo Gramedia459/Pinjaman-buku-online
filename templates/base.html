@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> {# SANGAT PENTING untuk responsivitas #}
+    <title>{% block title %}Sistem Peminjaman Buku Gramedia{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {# Font Awesome CDN untuk Icon #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {# Favicon (jika ada) #}
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    {# BARU: Favicon dengan type PNG (jika Anda menggunakan PNG) #}
+    <link rel="icon" href="{{ url_for('static', filename='images/mylogo.png') }}" type="image/png">
+</head>
+<body>
+    {# --- Pop-up Notifikasi Peminjaman (Loan Success) START --- #}
+    <div id="loan-success-popup-overlay" class="popup-overlay">
+        <div class="popup-content loan-success-popup-content">
+            <img src="{{ url_for('static', filename='images/terimakasih.png') }}" alt="Terima Kasih" style="max-width: 180px; height: auto;">
+            <h3>Terima kasih telah meminjam buku pada sistem pinjam buku Gramedia</h3>
+            <p>hindari keterlambatan pengembalian buku ya...</p>
+            <p>Mohon mengecek email notifikasi untuk melihat batas waktu dan keterangan lainnya.</p>
+            <p>See you the next time!</p>
+            <button id="close-loan-popup-button">Oke</button>
+        </div>
+    </div>
+    {# --- Pop-up Notifikasi Peminjaman (Loan Success) END --- #}
+
+    {# --- Pop-up Notifikasi Pengembalian (Return Success) START --- #}
+    <div id="return-success-popup-overlay" class="popup-overlay">
+        <div class="popup-content return-success-popup-content">
+            <img src="{{ url_for('static', filename='images/terimakasih.png') }}" alt="Terima Kasih" style="max-width: 180px; height: auto;">
+            <h3>Terima kasih telah mengembalikan buku dengan waktu yang ditentukan..</h3>
+            <h4>Silahkan Lapor Ke petugas atau PIC Book bahwa anda telah mengembalikan buku, mohon segera di Wrapping dan di display kembali..</h4>
+            <p class="question">Apakah kamu menyukai website pinjam buku ini?</p>
+            <div class="feedback-buttons">
+                <button id="btnSangatMenyukai" class="button">Sangat menyukai</button>
+                <button id="btnTidakMenyukai" class="button button-secondary">Tidak menyukai</button>
+            </div>
+            <p id="feedback-message" style="margin-top: 10px; font-size: 0.9em;"></p> {# Untuk pesan feedback setelah klik tombol #}
+        </div>
+    </div>
+    {# --- Pop-up Notifikasi Pengembalian (Return Success) END --- #}
+
+    {# --- Pop-up Konfirmasi Hapus Pengguna (dari manage_users.html) START --- #}
+    {# Catatan: Struktur HTML ini akan diduplikasi di manage_users.html.
+        Namun, CSS di style.css akan mengaturnya.
+        Jika Anda ingin memastikan hanya ada satu instansi HTML ini secara global,
+        Anda bisa memindahkannya ke base.html dan menampilkannya/menyembunyikannya dengan JS.
+        Untuk saat ini, karena Anda mengirim manage_users.html dengan struktur ini,
+        saya akan mengasumsikan duplikasi diizinkan dan fokus pada CSS globalnya. #}
+    {# Perhatikan: pop-up delete sebenarnya ada di manage_users.html #}
+    {# <div id="delete-confirm-popup-overlay" class="popup-overlay">...</div> #}
+    {# --- Pop-up Konfirmasi Hapus Pengguna END --- #}
+
+
+    {# --- LOADING OVERLAY START --- #}
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p>Sabar ya Broo...</p>
+    </div>
+    {# --- LOADING OVERLAY END --- #}
+
+    <header>
+        <h1>Sistem Peminjaman Buku</h1>
+        <nav>
+            <ul class="nav-links">
+                {% if current_user.is_authenticated %}
+                    <li><span>Halo, {{ current_user.full_name if current_user.full_name else current_user.username }} ({{ current_user.role.capitalize() }})!</span></li>
+
+                    {% if not current_user.is_admin() and not current_user.is_developer() %} {# Peminjam #}
+                        <li><a href="{{ url_for('dashboard') }}" aria-label="Dashboard" title="Dashboard"><i class="fas fa-home menu-icon"></i></a></li>
+                    {% endif %}
+
+                    {% if current_user.is_admin() %}
+                        <li><a href="{{ url_for('admin_dashboard') }}" aria-label="Dashboard Admin" title="Dashboard Admin"><i class="fas fa-tachometer-alt menu-icon"></i></a></li>
+                        {# BARIS BERIKUT TELAH DIHAPUS: <li><a href="{{ url_for('manage_users') }}" aria-label="Manajemen Pengguna" title="Manajemen Pengguna"><i class="fas fa-users-cog menu-icon"></i></a></li> #}
+                        <li><a href="{{ url_for('loan_history') }}" aria-label="Riwayat Peminjaman Admin" title="Riwayat Peminjaman (Admin)"><i class="fas fa-history menu-icon"></i></a></li>
+                    {% elif current_user.is_developer() %} {# Menu untuk Developer #}
+                        <li><a href="{{ url_for('developer_dashboard') }}" aria-label="Dashboard Developer" title="Dashboard Developer"><i class="fas fa-code menu-icon"></i></a></li>
+                        <li><a href="{{ url_for('manage_users') }}" aria-label="Manajemen Pengguna" title="Manajemen Pengguna"><i class="fas fa-users-cog menu-icon"></i></a></li>
+                        <li><a href="{{ url_for('loan_history') }}" aria-label="Riwayat Peminjaman Developer" title="Riwayat Peminjaman (Developer)"><i class="fas fa-history menu-icon"></i></a></li>
+                    {% else %} {# Peminjam #}
+                        <li><a href="{{ url_for('loan_history') }}" aria-label="Riwayat Peminjaman Saya" title="Riwayat Peminjaman Saya"><i class="fas fa-history menu-icon"></i></a></li>
+                    {% endif %}
+
+                    {# Tombol Profil untuk membuka overlay #}
+                    <li><a href="#" id="profile-toggle-button" aria-label="Profil Anda" title="Profil"><i class="fas fa-user-circle menu-icon"></i></a></li>
+                {% else %}
+                    {# Tampilan untuk pengguna yang belum login #}
+                    <li><a href="{{ url_for('login') }}" aria-label="Login" title="Login"><i class="fas fa-sign-in-alt menu-icon"></i></a></li>
+                    <li><a href="{{ url_for('register') }}" aria-label="Daftar" title="Daftar"><i class="fas fa-user-plus menu-icon"></i></a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main id="main-content"> {# Tambahkan ID untuk referensi JS dan efek blur #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2025 Sistem Peminjaman Buku || by. Store Administrative Clerk</p>
+    </footer>
+
+    {# START: PROFILE OVERLAY #}
+    <div id="profile-overlay" class="popup-overlay"> {# Tambahkan class popup-overlay untuk gaya umum #}
+        <div class="profile-panel">
+            <h2>Profil Pengguna</h2>
+
+            <div class="profile-avatar-placeholder">
+                <i class="fas fa-user"></i>
+            </div>
+
+            <div class="profile-details">
+                {% if current_user.is_authenticated %}
+                    <div class="detail-row">
+                        <strong>Nama Lengkap:</strong>
+                        <span>{{ current_user.full_name if current_user.full_name else current_user.username }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Username:</strong>
+                        <span>{{ current_user.username }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Email:</strong>
+                        <span>{{ current_user.email if current_user.email else '-' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Peran:</strong>
+                        <span>{{ current_user.role.capitalize() }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Terdaftar Sejak:</strong>
+                        <span>{{ current_user.registration_date.strftime('%d %B %Y') if current_user.registration_date else '-' }}</span>
+                    </div>
+                {% else %}
+                    <p>Anda belum login.</p>
+                {% endif %}
+            </div>
+
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('logout') }}" class="button profile-logout-button">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="button profile-logout-button">Login</a>
+            {% endif %}
+
+            <button id="profile-close-button" class="close-overlay-button" aria-label="Tutup Profil"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+    {# END: PROFILE OVERLAY #}
+
+    {# --- Tombol WhatsApp Floating START --- #}
+    {# Pastikan whatsapp_message telah didefinisikan di route Flask yang merender template ini #}
+    {% if whatsapp_message is defined %}
+    <a href="https://wa.me/6281290452571?text={{ whatsapp_message }}" target="_blank" class="whatsapp-float">
+        <i class="fab fa-whatsapp whatsapp-icon"></i>
+    </a>
+    {% endif %}
+    {# --- Tombol WhatsApp Floating END --- #}
+
+    {# --- JavaScript Utama --- #}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mainContent = document.getElementById('main-content'); // Menggunakan ID yang ditambahkan ke main
+            const loadingOverlay = document.getElementById('loading-overlay');
+
+            // --- Loading Overlay ---
+            // Sembunyikan loading overlay setelah halaman dimuat
+            if (loadingOverlay) {
+                loadingOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 500); // Tunggu 0.5 detik untuk transisi
+            }
+
+            // --- Pop-up Notifikasi Peminjaman/Pengembalian ---
+            const urlParams = new URLSearchParams(window.location.search);
+            const loanSuccess = urlParams.get('loan_success');
+            const returnSuccess = urlParams.get('return_success');
+
+            const loanSuccessPopupOverlay = document.getElementById('loan-success-popup-overlay');
+            const returnSuccessPopupOverlay = document.getElementById('return-success-popup-overlay');
+
+            // Function to show a popup
+            function showPopup(popupOverlay) {
+                if (popupOverlay) {
+                    popupOverlay.classList.add('show');
+                    if (mainContent) mainContent.classList.add('blurred');
+                    document.body.classList.add('no-scroll');
+                }
+            }
+
+            // Function to hide a popup
+            function hidePopup(popupOverlay) {
+                if (popupOverlay) {
+                    popupOverlay.classList.remove('show');
+                    if (mainContent) mainContent.classList.remove('blurred');
+                    document.body.classList.remove('no-scroll');
+                    // Reset tombol tidak menyukai (posisi absolut)
+                    const btnTidakMenyukai = document.getElementById('btnTidakMenyukai');
+                    if (btnTidakMenyukai) {
+                        btnTidakMenyukai.style.position = 'static';
+                        btnTidakMenyukai.style.transform = 'none';
+                        // Jika button-secondary, pastikan stylingnya kembali normal
+                        btnTidakMenyukai.classList.add('button-secondary'); // Tambahkan kembali kelas jika hilang
+                    }
+                    const feedbackMessage = document.getElementById('feedback-message');
+                    if (feedbackMessage) feedbackMessage.textContent = ''; // Kosongkan pesan feedback
+                }
+            }
+
+            if (loanSuccess === 'true') {
+                showPopup(loanSuccessPopupOverlay);
+                history.replaceState({}, document.title, window.location.pathname); // Hapus parameter URL
+            } else if (returnSuccess === 'true') {
+                showPopup(returnSuccessPopupOverlay);
+                history.replaceState({}, document.title, window.location.pathname); // Hapus parameter URL
+            }
+
+            // Event listener untuk tombol "Oke" pada pop-up peminjaman
+            const closeLoanPopupButton = document.getElementById('close-loan-popup-button');
+            if (closeLoanPopupButton) {
+                closeLoanPopupButton.addEventListener('click', function() {
+                    hidePopup(loanSuccessPopupOverlay);
+                });
+            }
+            // Tutup pop-up peminjaman jika klik di luar konten
+            if (loanSuccessPopupOverlay) {
+                loanSuccessPopupOverlay.addEventListener('click', function(event) {
+                    if (event.target === loanSuccessPopupOverlay) {
+                        hidePopup(loanSuccessPopupOverlay);
+                    }
+                });
+            }
+
+            // Event listener untuk tombol feedback pengembalian
+            const btnSangatMenyukai = document.getElementById('btnSangatMenyukai');
+            const btnTidakMenyukai = document.getElementById('btnTidakMenyukai');
+            const returnPopupContent = document.querySelector('#return-success-popup-overlay .return-success-popup-content');
+
+            if (btnSangatMenyukai) {
+                btnSangatMenyukai.addEventListener('click', function() {
+                    const feedbackMessage = document.getElementById('feedback-message');
+                    if (feedbackMessage) feedbackMessage.textContent = 'Terima kasih atas feedback positif Anda!';
+                    setTimeout(() => hidePopup(returnSuccessPopupOverlay), 1500); // Tutup setelah 1.5 detik
+                });
+            }
+
+            if (btnTidakMenyukai) {
+                let initialPositionSet = false;
+                btnTidakMenyukai.addEventListener('mouseover', function(event) {
+                    // Hanya gerakkan tombol jika pesan feedback belum muncul
+                    const feedbackMessage = document.getElementById('feedback-message');
+                    if (feedbackMessage && feedbackMessage.textContent) return; // Jika sudah ada pesan, jangan gerakkan
+
+                    if (!initialPositionSet) {
+                        // Set posisi awal secara absolut relatif terhadap konten popup
+                        btnTidakMenyukai.style.position = 'absolute';
+                        const initialRect = btnTidakMenyukai.getBoundingClientRect();
+                        const contentRect = returnPopupContent.getBoundingClientRect();
+                        btnTidakMenyukai.style.left = `${initialRect.left - contentRect.left}px`;
+                        btnTidakMenyukai.style.top = `${initialRect.top - contentRect.top}px`;
+                        btnTidakMenyukai.classList.remove('button'); // Hapus class 'button' yang mungkin mengganggu styling posisi
+                        btnTidakMenyukai.classList.add('dislike-button-animated'); // Tambahkan kelas untuk animasi
+                        initialPositionSet = true;
+                    }
+
+                    moveDislikeButton(event);
+                });
+
+                function moveDislikeButton(event) {
+                    const button = event.target;
+                    const contentRect = returnPopupContent.getBoundingClientRect();
+                    const buttonRect = button.getBoundingClientRect();
+
+                    const padding = 20; // Padding internal popup
+                    const minDistance = 100; // Jarak minimum lompatan
+
+                    const currentLeft = parseFloat(button.style.left) || 0;
+                    const currentTop = parseFloat(button.style.top) || 0;
+
+                    let newX, newY;
+                    let attempts = 0;
+                    const maxAttempts = 50; // Batasi percobaan
+
+                    do {
+                        newX = padding + Math.random() * (contentRect.width - buttonRect.width - (2 * padding));
+                        newY = padding + Math.random() * (contentRect.height - buttonRect.height - (2 * padding));
+                        attempts++;
+                    } while (attempts < maxAttempts &&
+                                     Math.sqrt(Math.pow(newX - currentLeft, 2) + Math.pow(newY - currentTop, 2)) < minDistance);
+
+                    button.style.left = `${newX}px`;
+                    button.style.top = `${newY}px`;
+                    button.style.transition = 'left 0.2s ease-out, top 0.2s ease-out'; // Animasi pergerakan
+                }
+
+                // BARIS BERIKUT TELAH DIKOMENTARI UNTUK MEMBUAT TOMBOL TIDAK BISA DIKLIK SAAT DIPENCET
+                // btnTidakMenyukai.addEventListener('click', function(event) {
+                //     event.preventDefault();
+                //     const feedbackMessage = document.getElementById('feedback-message');
+                //     if (feedbackMessage) feedbackMessage.textContent = 'Kami akan terus berusaha meningkatkan kualitas layanan kami.';
+                //     // Hentikan animasi tombol
+                //     btnTidakMenyukai.style.transition = 'none';
+                //     btnTidakMenyukai.style.position = 'static'; // Reset posisi agar tidak bergerak lagi
+                //     btnTidakMenyukai.style.transform = 'none'; // Reset transform
+                //     btnTidakMenyukai.classList.remove('dislike-button-animated');
+                //     btnTidakMenyukai.classList.add('button'); // Kembalikan class button jika perlu
+                //     setTimeout(() => hidePopup(returnSuccessPopupOverlay), 1500); // Tutup setelah 1.5 detik
+                // });
+            }
+
+            // Tutup pop-up pengembalian jika klik di luar konten
+            if (returnSuccessPopupOverlay) {
+                returnSuccessPopupOverlay.addEventListener('click', function(event) {
+                    if (event.target === returnSuccessPopupOverlay) {
+                        hidePopup(returnSuccessPopupOverlay);
+                    }
+                });
+            }
+
+            // --- Overlay Profil dari Samping ---
+            const profileLink = document.getElementById('profile-toggle-button'); // ID yang benar
+            const profileOverlay = document.getElementById('profile-overlay');
+            const closeProfileOverlayButton = document.getElementById('profile-close-button'); // ID yang benar
+
+            if (profileLink && profileOverlay && closeProfileOverlayButton) {
+                profileLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    profileOverlay.classList.add('active');
+                    if (mainContent) mainContent.classList.add('blurred');
+                    document.body.classList.add('no-scroll');
+                });
+
+                closeProfileOverlayButton.addEventListener('click', function() {
+                    profileOverlay.classList.remove('active');
+                    if (mainContent) mainContent.classList.remove('blurred');
+                    document.body.classList.remove('no-scroll');
+                });
+
+                profileOverlay.addEventListener('click', function(e) {
+                    if (e.target === profileOverlay) { // Hanya tutup jika klik langsung pada overlay
+                        profileOverlay.classList.remove('active');
+                        if (mainContent) mainContent.classList.remove('blurred');
+                        document.body.classList.remove('no-scroll');
+                    }
+                });
+            }
+
+            // Atur event listener untuk link lain (agar loading overlay berfungsi saat navigasi)
+            const allLinks = document.querySelectorAll('a');
+            allLinks.forEach(link => {
+                // Hindari menambahkan listener pada link yang sudah dihandle (mis. tombol profil, tombol pop-up)
+                // dan link yang tidak memuat halaman baru (misal: hanya anchor #)
+                if (link.id === 'profile-toggle-button' || link.id === 'profile-close-button' || link.closest('#profile-overlay') || link.hash) {
+                    return;
+                }
+                // Hanya aktifkan loading untuk navigasi internal (hostname sama)
+                if (link.hostname === window.location.hostname || link.hostname === '') { // '' untuk relative paths
+                    link.addEventListener('click', function(event) {
+                        const loadingOverlay = document.getElementById('loading-overlay');
+                        if (loadingOverlay) {
+                            loadingOverlay.style.display = 'flex';
+                            loadingOverlay.style.opacity = '1';
+                        }
+                    });
+                }
+            });
+
+            // Atur event listener untuk form submit (agar loading overlay berfungsi)
+            const allForms = document.querySelectorAll('form');
+            allForms.forEach(form => {
+                form.addEventListener('submit', function(event) {
+                    const loadingOverlay = document.getElementById('loading-overlay');
+                    if (loadingOverlay) {
+                        loadingOverlay.style.display = 'flex';
+                        loadingOverlay.style.opacity = '1';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

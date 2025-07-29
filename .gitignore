@@ -1,0 +1,9 @@
+# Ignored files for Python projects
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+
+# Google Cloud Credentials (YOUR SECRET!)
+credentials.json
